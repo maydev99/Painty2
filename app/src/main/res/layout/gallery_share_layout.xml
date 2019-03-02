@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gallery_share_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/shareTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:gravity="center_horizontal"
+        android:text="Share this Sketch?"
+        android:textColor="@android:color/white"
+        android:textSize="20sp" />
+
+
+    <ImageView
+        android:id="@+id/selectedImageImageView"
+        android:layout_width="330dp"
+        android:layout_height="440dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitStart"
+        android:src="@mipmap/ic_launcher" />
+
+    <Button
+        android:id="@+id/shareButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Share It"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@android:color/white"/>
+
+</LinearLayout>

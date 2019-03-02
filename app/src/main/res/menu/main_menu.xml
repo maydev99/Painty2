@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/about"
+        android:title="About"
+        android:orderInCategory="30"
+        app:showAsAction="never">
+
+    </item>
+
+    <item
+        android:id="@+id/save"
+        android:title="Save"
+        android:orderInCategory="5"
+        android:icon="@drawable/ic_save_white_24dp"
+        app:showAsAction="always">
+    </item>
+
+    <item
+        android:id="@+id/share"
+        android:title="Share"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:orderInCategory="8"
+        app:showAsAction="always">
+
+    </item>
+
+    <item
+        android:id="@+id/clear_canvas"
+        android:title="Clear Canvas"
+        android:orderInCategory="20"
+        app:showAsAction="never">
+
+    </item>
+
+    <item
+        android:id="@+id/gallery"
+        android:title="Gallery"
+        android:icon="@drawable/ic_photo_library_white_24dp"
+        android:orderInCategory="12"
+        app:showAsAction="always">
+
+    </item>
+
+
+
+</menu>

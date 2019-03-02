@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <top.defaults.colorpicker.ColorPickerView
+        android:id="@+id/colorPicker"
+        app:enableAlpha="true"
+        app:enableBrightness="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/hexCodeTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Hex Code"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:padding="16dp"
+        android:gravity="center_horizontal"/>
+
+</LinearLayout>
