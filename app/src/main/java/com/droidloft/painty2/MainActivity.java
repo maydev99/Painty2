@@ -36,16 +36,14 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String version = "0.1", buildDate = "3-2-2019";
+    private static final String version = "0.2", buildDate = "3-3-2019";
     private String colorStr;
     private ImageView colorImageView;
     private InkView inkView;
     private SeekBar brushSeekbar;
     private int seekbarInit = 6;
     private TextView brushSizeTextView, colorTextView;
-    //private boolean colorIsSetToBrush = true;
-    //private String backgroundColor = "#FFFFFF";
-    //private int r,g,b;
+    private boolean colorIsSetToBrush = true;
 
 
     @Override
@@ -64,25 +62,35 @@ public class MainActivity extends AppCompatActivity {
         brushSizeTextView.setText("Brush Size:" + seekbarInit);
         inkView.setMaxStrokeWidth(6f);
         inkView.setMinStrokeWidth(4f);
-        //inkView.setBackgroundColor(Color.WHITE);
+        inkView.setBackgroundColor(Color.WHITE);
 
-       /* colorTextView.setOnClickListener(new View.OnClickListener() {
+        colorTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(colorIsSetToBrush) {
-                    colorTextView.setText("Canvas");
+                    colorTextView.setText("Eraser");
                     colorIsSetToBrush = false;
+                    inkView.setColor(Color.WHITE);
+                    colorImageView.setBackgroundColor(Color.WHITE);
+
+
                 } else {
                     colorTextView.setText("Brush");
                     colorIsSetToBrush = true;
+                    inkView.setColor(Color.parseColor(colorStr));
+                    colorImageView.setBackgroundColor(Color.parseColor(colorStr));
                 }
             }
-        });*/
+        });
 
 
         colorImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!colorIsSetToBrush) {
+                    colorTextView.setText("Brush");
+                    colorIsSetToBrush = true;
+                }
                 startActivity(new Intent(MainActivity.this, ColorPicker.class));
             }
         });
@@ -239,16 +247,7 @@ public class MainActivity extends AppCompatActivity {
         colorImageView.setBackgroundColor(Color.parseColor(colorStr));
         inkView = findViewById(R.id.inkview);
         inkView.setColor(Color.parseColor(colorStr));
-        /*if(colorIsSetToBrush) {
-            inkView.setColor(Color.parseColor(colorStr));
-        } else {
-            inkView.setBackgroundColor(Color.parseColor(colorStr));
-            int hex = Integer.parseInt(colorStr);
-            r = (hex & 0xFF0000) >> 16;
-            g = (hex & 0xFF00) >> 8;
-            b = (hex & 0xFF);
 
-        }*/
 
 
 

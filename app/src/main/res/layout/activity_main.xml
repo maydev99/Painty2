@@ -23,6 +23,11 @@
                 android:layout_height="60dp"
                 android:background="@android:color/black" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/black"/>
+
             <TextView
                 android:id="@+id/colorTextView"
                 android:layout_width="match_parent"
@@ -52,6 +57,11 @@
                 android:max="30"
                 android:layout_height="60dp" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/black"/>
+
             <TextView
                 android:id="@+id/brushSizeTextView"
                 android:layout_width="match_parent"
@@ -71,8 +81,8 @@
     <View
         android:id="@+id/line1"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/colorPrimary"
+        android:layout_height="3dp"
+        android:background="@android:color/black"
         android:layout_below="@+id/toolbar"/>
 
 
