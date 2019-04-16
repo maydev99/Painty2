@@ -18,8 +18,8 @@
 
     <ImageView
         android:id="@+id/deleteImageView"
-        android:layout_width="360dp"
-        android:layout_height="440dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:scaleType="centerCrop"
         app:srcCompat="@mipmap/ic_launcher" />

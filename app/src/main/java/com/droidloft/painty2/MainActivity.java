@@ -1,11 +1,13 @@
 package com.droidloft.painty2;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,10 +15,17 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,12 +40,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String version = "0.2", buildDate = "3-3-2019";
+    private static final String version = "0.3", buildDate = "4-16-2019";
     private String colorStr;
     private ImageView colorImageView;
     private InkView inkView;
@@ -44,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
     private int seekbarInit = 6;
     private TextView brushSizeTextView, colorTextView;
     private boolean colorIsSetToBrush = true;
+    private ArrayList<String> recentColorsArrayList;
+    private Set<String> set;
+    private boolean isEditingImage = false;
+    private String editFilename;
 
 
     @Override
@@ -95,6 +111,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        colorImageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showRecentColorsDialog();
+                return true;
+            }
+        });
+
         brushSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -119,6 +143,48 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
+
+    }
+
+    private void showRecentColorsDialog() {
+        final Dialog recentColorDialog = new Dialog(this);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View recentColorLayout = inflater.inflate(R.layout.recent_colors_layout, (ViewGroup) findViewById(R.id.recent_colors_layout));
+        recentColorDialog.setContentView(recentColorLayout);
+
+        recentColorDialog.show();
+
+        final ListView recentColorsListView = recentColorLayout.findViewById(R.id.recentColorsListView);
+        ArrayAdapter<String> recentColorsArrayAdapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.list_item_item, recentColorsArrayList) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                // Get the current item from ListView
+                View view = super.getView(position, convertView, parent);
+                String myColor = (String) recentColorsListView.getItemAtPosition(position);
+                view.setBackgroundColor(Color.parseColor(myColor));
+
+                return view;
+            }
+        };
+
+        recentColorsListView.setAdapter(recentColorsArrayAdapter);
+
+
+
+
+
+
+        recentColorsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                colorStr = (String) recentColorsListView.getItemAtPosition(position);
+                recentColorDialog.cancel();
+                colorImageView.setBackgroundColor(Color.parseColor(colorStr));
+                inkView = findViewById(R.id.inkview);
+                inkView.setColor(Color.parseColor(colorStr));
+            }
+        });
     }
 
 
@@ -242,14 +308,95 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        loadEditPrefs();
+        recentColorsArrayList = new ArrayList<>();
         colorStr = "#ffffff";
         loadColorPrefs();
+        loadRecentColors();
         colorImageView.setBackgroundColor(Color.parseColor(colorStr));
         inkView = findViewById(R.id.inkview);
         inkView.setColor(Color.parseColor(colorStr));
+        saveToRecentColors(colorStr);
+
+        if(isEditingImage) {
+            loadImage();
+            isEditingImage = false;
+            saveEditingPrefs();
+        }
 
 
 
 
     }
+
+    private void saveEditingPrefs() {
+        SharedPreferences editPrefs = getSharedPreferences("edit_key", MODE_PRIVATE);
+        SharedPreferences.Editor editEditor = editPrefs.edit();
+        editEditor.putBoolean("edit_key", isEditingImage);
+        editEditor.apply();
+    }
+
+    private void loadImage() {
+
+        try {
+            File file = new File(android.os.Environment.getExternalStorageDirectory(), "Painty2/" + editFilename);
+            final Bitmap myBitmap = BitmapFactory.decodeFile(String.valueOf(file));
+            inkView.drawBitmap(myBitmap, 0 ,0, null);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void loadEditPrefs() {
+        SharedPreferences editPrefs = getSharedPreferences("edit_key", MODE_PRIVATE);
+        isEditingImage = editPrefs.getBoolean("edit_key", false);
+
+        SharedPreferences fileNamePrefs = getSharedPreferences("filename_key", MODE_PRIVATE);
+        editFilename = fileNamePrefs.getString("filename_key", null);
+    }
+
+    private void loadRecentColors() {
+        SharedPreferences recentColorPrefs = getSharedPreferences("recent_colors", MODE_PRIVATE);
+        set = recentColorPrefs.getStringSet("recent_colors", null);
+
+        if(set != null) {
+            recentColorsArrayList.clear();
+            recentColorsArrayList = new ArrayList<String>(set);
+        } else {
+            recentColorsArrayList = new ArrayList<>();
+        }
+    }
+
+    private void saveToRecentColors(String addedColor) {
+        if(recentColorsArrayList.size() < 10) {
+            if(recentColorsArrayList.size() > 0){
+                recentColorsArrayList.add(recentColorsArrayList.size() -1, addedColor);
+            } else {
+                recentColorsArrayList.add(addedColor);
+            }
+
+
+
+        } else {
+            recentColorsArrayList.remove(0);
+            recentColorsArrayList.add(addedColor);
+        }
+
+        set = new HashSet<>();
+        set.addAll(recentColorsArrayList);
+
+        SharedPreferences recentColorPrefs = getSharedPreferences("recent_colors", MODE_PRIVATE);
+        SharedPreferences.Editor recentColorEditor = recentColorPrefs.edit();
+        recentColorEditor.putStringSet("recent_colors", set);
+        recentColorEditor.apply();
+
+        Log.d("RECENT COLORS", String.valueOf(recentColorsArrayList));
+
+
+
+    }
+
+
 }

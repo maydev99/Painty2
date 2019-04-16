@@ -2,7 +2,7 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="128dp"
     android:layout_height="220dp"
-    android:scaleType="fitStart"
+    android:scaleType="centerInside"
     android:adjustViewBounds="true"
     android:id="@+id/gallery_item_item">
 

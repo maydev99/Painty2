@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,6 +36,7 @@ public class Gallery extends AppCompatActivity {
     private ArrayList<String> f = new ArrayList<>();
     private ArrayList<String> fname = new ArrayList<>();
     private File[] listFile;
+    private boolean isEditingImage = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,7 +50,7 @@ public class Gallery extends AppCompatActivity {
 
         imageGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 final Dialog shareDialog = new Dialog(Gallery.this);
                 LayoutInflater inflater = (LayoutInflater) Gallery.this.getSystemService(LAYOUT_INFLATER_SERVICE);
                 View galleryShareLayout = inflater.inflate(R.layout.gallery_share_layout, (ViewGroup)findViewById(R.id.gallery_share_layout));
@@ -57,9 +59,11 @@ public class Gallery extends AppCompatActivity {
 
                 ImageView imageView = galleryShareLayout.findViewById(R.id.selectedImageImageView);
                 Button shareButton = galleryShareLayout.findViewById(R.id.shareButton);
+                Button editButton = galleryShareLayout.findViewById(R.id.editButton);
 
                 File file = new File(android.os.Environment.getExternalStorageDirectory(), "Painty2/" + fname.get(position));
                 final Bitmap myBitmap = BitmapFactory.decodeFile(String.valueOf(file));
+
                 imageView.setImageBitmap(myBitmap);
 
                 shareButton.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +71,18 @@ public class Gallery extends AppCompatActivity {
                     public void onClick(View v) {
                         shareDrawing(myBitmap);
                         shareDialog.cancel();
+                    }
+                });
+
+                editButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isEditingImage = true;
+                        String imageFileName = fname.get(position);
+                        editImage(imageFileName);
+                        shareDialog.cancel();
+                        finish();
+
                     }
                 });
             }
@@ -109,6 +125,19 @@ public class Gallery extends AppCompatActivity {
         });
 
 
+
+    }
+
+    private void editImage(String fileName) {
+        SharedPreferences editPrefs = getSharedPreferences("edit_key", MODE_PRIVATE);
+        SharedPreferences.Editor editEditor = editPrefs.edit();
+        editEditor.putBoolean("edit_key", isEditingImage);
+        editEditor.apply();
+
+        SharedPreferences fileNamePrefs = getSharedPreferences("filename_key", MODE_PRIVATE);
+        SharedPreferences.Editor filenameEditor =fileNamePrefs.edit();
+        filenameEditor.putString("filename_key", fileName);
+        filenameEditor.apply();
 
     }
 
