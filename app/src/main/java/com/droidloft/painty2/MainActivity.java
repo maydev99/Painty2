@@ -30,6 +30,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.tbouron.shakedetector.library.ShakeDetector;
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
 import com.simplify.ink.InkView;
@@ -48,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String version = "0.3", buildDate = "4-16-2019";
+    private static final String version = "0.4", buildDate = "11-10-2019";
     private String colorStr;
     private ImageView colorImageView;
     private InkView inkView;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         inkView = findViewById(R.id.inkview);
+        initializeShakeDetector();
 
         colorImageView = findViewById(R.id.color_imageview);
         brushSeekbar = findViewById(R.id.brushSizeSeekbar);
@@ -145,6 +147,16 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void initializeShakeDetector() {
+        ShakeDetector.create(this, new ShakeDetector.OnShakeListener() {
+            @Override
+            public void OnShake() {
+                inkView.clear();
+            }
+        });
+        ShakeDetector.updateConfiguration(3.0f,4);
     }
 
     private void showRecentColorsDialog() {
@@ -396,6 +408,24 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ShakeDetector.start();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ShakeDetector.stop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ShakeDetector.destroy();
     }
 
 
